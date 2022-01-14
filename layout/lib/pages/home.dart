@@ -1,9 +1,9 @@
-import 'dart:convert';   // JSON decode
 import 'package:flutter/material.dart';
 import 'package:layout/pages/detail.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'dart:convert';   // JSON decode
 
 class HomePage extends StatefulWidget {
   //const HomePage({ Key? key }) : super(key: key);
@@ -23,8 +23,7 @@ class _HomePageState extends State<HomePage> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: FutureBuilder(builder: (context, AsyncSnapshot snapshot) {
-          // ถ้าจะถึงข้อมูล API จาก GitHub ไม่ต้องใส่บรรทัดล่างนี้แล้ว (it's causing error in json)
-          // var data = json.decode(snapshot.data.toString());  // [{หมาคือตัวอะไร...,{},{},{}]
+          //var data = json.decode(snapshot.data.toString());  // [{หมาคือตัวอะไร...,{},{},{}]
           return ListView.builder(
             // itemBuilder กับ itemCount เหมือนกับ for loop
             itemBuilder: (BuildContext context, int index){

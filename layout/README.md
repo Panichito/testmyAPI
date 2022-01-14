@@ -1,6 +1,6 @@
 # layout
 
-A new Flutter project.
+A new DogDogApp project. (Try it out and put everything I can think of)
 
 ## Getting Started
 
