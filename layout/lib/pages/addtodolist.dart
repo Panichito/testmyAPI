@@ -47,7 +47,7 @@ class _AddPageState extends State<AddPage> {
               padding: const EdgeInsets.all(80),
               child: ElevatedButton(
                 onPressed: () {
-                  print("--------OK, WE'RE HERE--------");
+                  print("--------OK, WE'RE HERE FOR ADDING--------");
                   print('title: ${todo_title.text}');
                   print('detail: ${todo_detail.text}');
                   postTodo();
@@ -73,7 +73,7 @@ class _AddPageState extends State<AddPage> {
   Future postTodo() async{
     // ngrok http 8000
     //var url = Uri.https('19ce-2001-fb1-b3-56f8-dc33-56a1-8efe-3b15.ngrok.io', '/api/post-todolist');
-    var url = Uri.http('192.168.1.42:8000', '/api/post-todolist');
+    var url = Uri.http('192.168.42.114:8000', '/api/post-todolist');
     Map<String, String> header = {"Content-type":"application/json"};
     String jsondata = '{"title":"${todo_title.text}", "detail":"${todo_detail.text}"}';
     var response = await http.post(url, headers: header, body: jsondata);

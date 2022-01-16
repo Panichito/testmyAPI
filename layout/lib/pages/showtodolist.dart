@@ -22,6 +22,7 @@ class _TodolistState extends State<Todolist> {
     // TODO: implement initState
     super.initState();
     getTodolist();
+    print('PASS THROUGH => Inside InitState!');
   }
 
   @override
@@ -30,12 +31,27 @@ class _TodolistState extends State<Todolist> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           print('Go to Add Page');
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddPage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddPage())).then((value) {
+            setState(() {
+              getTodolist();  // ให้มัน refresh หน้าใหม่ โดยการเรียก getTodolist()
+            });
+          });
         },
         child: Icon(Icons.add, color: Colors.white,),
         backgroundColor: Colors.orange[800],
       ),
-      appBar: AppBar(title: Text('แสดงรายการทั้งหมด', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),), backgroundColor: Colors.orange[800],),
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: () {
+            print("Refresh button clicked");  // show on terminal
+            setState(() {
+              getTodolist();
+            });
+          }, icon: Icon(Icons.refresh, color: Colors.white,)),
+        ],
+        title: Text('รายการที่คุณต้องทำทั้งหมด',style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),),
+        backgroundColor: Colors.orange[800],
+      ),
       body: todolistCreate(),
     );
   }
@@ -44,18 +60,28 @@ class _TodolistState extends State<Todolist> {
     return ListView.builder(itemCount: todolistitems.length, itemBuilder: (context, index) {
       return Card(
         child: ListTile(
-        title: Text("Title = ${todolistitems[index]['title']}"),
+        title: Text("${todolistitems[index]['title']} (ID: ${todolistitems[index]['id']})"),
         onTap: () {
           print('Go to Update Page');
-          Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePage(todolistitems[index]['id'], todolistitems[index]['title'], todolistitems[index]['detail'])));
-          getTodolist();  // ให้มันกดไปดูสักอันเพื่อ refresh
+          Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePage(todolistitems[index]['id'], todolistitems[index]['title'], todolistitems[index]['detail']))).then((value) {
+            setState(() {
+              print(value);
+              if(value == 'delete') {
+                final snackBar = SnackBar(    // https://docs.flutter.dev/cookbook/design/snackbars
+                  content: const Text('ลบรายการเสร็จสิ้น'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+              getTodolist();
+            });
+          });
         },));
     });
   }
 
   Future<void> getTodolist() async {
     List alltodo = [];
-    var url = Uri.http('192.168.1.42:8000', '/api/all-todolist/');  // ดูเลข ip จาก cmd ipconfig IPv4 Address
+    var url = Uri.http('192.168.42.114:8000', '/api/all-todolist/');  // ดูเลข ip จาก cmd ipconfig IPv4 Address
     var response = await http.get(url);
     //var result = json.decode(response.body);   // มันขึ้นเป็นตัวไส้เดือน ถ้าเป็นภาษาไทยใช้ utf8
     var result = utf8.decode(response.bodyBytes);   

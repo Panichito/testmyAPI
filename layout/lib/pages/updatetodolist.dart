@@ -37,6 +37,8 @@ class _UpdatePageState extends State<UpdatePage> {
         actions: [
           IconButton(onPressed: () {
             print("Delete ID = $_v1");
+            deleteTodo();
+            Navigator.pop(context, 'delete');  // pop ออกจากหน้านี้เลย เหมือนการกด back <-- (ส่ง value ว่า 'delete' กลับไปด้วย)
           }, icon: Icon(Icons.delete)),
         ],
       ),
@@ -69,14 +71,14 @@ class _UpdatePageState extends State<UpdatePage> {
               padding: const EdgeInsets.all(80),
               child: ElevatedButton(
                 onPressed: () {
-                  print("--------OK, WE'RE HERE--------");
+                  print("--------HERE FOR UPDATING--------");
                   print('title: ${todo_title.text}');
                   print('detail: ${todo_detail.text}');
-                  postTodo();
-                  setState(() {   // กดส่งแล้ว clear ข้อมูล
-                    todo_title.clear();
-                    todo_detail.clear();
-                  });
+                  updateTodo();
+                  final snackBar = SnackBar(     // https://docs.flutter.dev/cookbook/design/snackbars
+                    content: const Text('อัพเดตรายการแล้ว'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 child: Text("แก้ไข", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                 style: ButtonStyle(
@@ -92,14 +94,22 @@ class _UpdatePageState extends State<UpdatePage> {
     );
   }
 
-  Future postTodo() async{
+  Future updateTodo() async{
     // ngrok http 8000
-    var url = Uri.https('.ngrok.io', '/api/post-todolist');
-    //var url = Uri.http('192.168.1.42:8000', '/api/post-todolist');
+    //var url = Uri.https('.ngrok.io', '/api/post-todolist');
+    var url = Uri.http('192.168.42.114:8000', '/api/update-todolist/${_v1}');
     Map<String, String> header = {"Content-type":"application/json"};
     String jsondata = '{"title":"${todo_title.text}", "detail":"${todo_detail.text}"}';
-    var response = await http.post(url, headers: header, body: jsondata);
-    print("---result---");
+    var response = await http.put(url, headers: header, body: jsondata);
+    print("---update result---");
+    print(response.body);
+  }
+
+  Future deleteTodo() async{
+    var url = Uri.http('192.168.42.114:8000', '/api/delete-todolist/${_v1}');
+    Map<String, String> header = {"Content-type":"application/json"};
+    var response = await http.delete(url, headers: header);
+    print("---delete result---");
     print(response.body);
   }
 }
